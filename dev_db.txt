@@ -1,0 +1,129 @@
+-- BANCO DE DADOS FICTÍCIO PARA TREINAMENTO DE CRUD
+-- MySQL
+
+CREATE DATABASE IF NOT EXISTS crud_usuarios
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE crud_usuarios;
+
+DROP TABLE IF EXISTS usuarios;
+
+CREATE TABLE usuarios (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20) NULL,
+    data_nascimento DATE NULL,
+    cidade VARCHAR(100) NULL,
+    estado CHAR(2) NULL,
+    cargo VARCHAR(100) NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    CONSTRAINT uk_usuarios_email UNIQUE (email)
+);
+
+-- DADOS FICTÍCIOS
+
+INSERT INTO usuarios (
+    nome,
+    email,
+    telefone,
+    data_nascimento,
+    cidade,
+    estado,
+    cargo,
+    ativo
+) VALUES
+('Ana Beatriz Martins', 'ana.martins@example.com', '11990000001', '1995-03-12', 'São Paulo', 'SP', 'Analista administrativa', TRUE),
+('Bruno Henrique Souza', 'bruno.souza@example.com', '11990000002', '1992-07-25', 'São Paulo', 'SP', 'Desenvolvedor backend', TRUE),
+('Camila Rodrigues Lima', 'camila.lima@example.com', '21990000003', '1998-11-04', 'Rio de Janeiro', 'RJ', 'Desenvolvedora frontend', TRUE),
+('Daniel Oliveira Costa', 'daniel.costa@example.com', '31990000004', '1989-01-18', 'Belo Horizonte', 'MG', 'Coordenador de projetos', TRUE),
+('Eduarda Ferreira Alves', 'eduarda.alves@example.com', '41990000005', '1997-05-30', 'Curitiba', 'PR', 'Analista de sistemas', TRUE),
+('Felipe Santos Rocha', 'felipe.rocha@example.com', '51990000006', '1991-09-16', 'Porto Alegre', 'RS', 'Administrador de banco de dados', TRUE),
+('Gabriela Mendes Ribeiro', 'gabriela.ribeiro@example.com', '71990000007', '1996-02-08', 'Salvador', 'BA', 'Analista de qualidade', TRUE),
+('Henrique Gomes Barbosa', 'henrique.barbosa@example.com', '81990000008', '1988-12-21', 'Recife', 'PE', 'Arquiteto de software', TRUE),
+('Isabela Cardoso Nunes', 'isabela.nunes@example.com', '85990000009', '2000-06-14', 'Fortaleza', 'CE', 'Assistente de TI', TRUE),
+('João Pedro Carvalho', 'joao.carvalho@example.com', '61990000010', '1994-10-02', 'Brasília', 'DF', 'Analista de infraestrutura', TRUE),
+
+('Karina Lopes Duarte', 'karina.duarte@example.com', '11990000011', '1993-08-11', 'Campinas', 'SP', 'Product owner', TRUE),
+('Lucas Almeida Moreira', 'lucas.moreira@example.com', '11990000012', '1999-04-27', 'Santos', 'SP', 'Desenvolvedor full stack', TRUE),
+('Mariana Teixeira Campos', 'mariana.campos@example.com', '27990000013', '1990-12-03', 'Vitória', 'ES', 'Scrum master', TRUE),
+('Nicolas Vieira Freitas', 'nicolas.freitas@example.com', '48990000014', '1996-09-19', 'Florianópolis', 'SC', 'Analista de suporte', TRUE),
+('Olívia Pereira Ramos', 'olivia.ramos@example.com', '62990000015', '1998-01-23', 'Goiânia', 'GO', 'UX designer', TRUE),
+('Paulo César Monteiro', 'paulo.monteiro@example.com', '11990000016', '1987-07-07', 'São Paulo', 'SP', 'Gerente de TI', TRUE),
+('Queila Araújo Silva', 'queila.silva@example.com', '91990000017', '1995-11-29', 'Belém', 'PA', 'Analista financeira', FALSE),
+('Rafael Batista Pinto', 'rafael.pinto@example.com', '11990000018', '1992-03-05', 'Sorocaba', 'SP', 'Desenvolvedor mobile', TRUE),
+('Sabrina Correia Melo', 'sabrina.melo@example.com', '84990000019', '1999-06-17', 'Natal', 'RN', 'Analista de dados', TRUE),
+('Thiago Fernandes Dias', 'thiago.dias@example.com', '31990000020', '1991-02-26', 'Uberlândia', 'MG', 'Engenheiro de dados', TRUE),
+
+('Amanda Reis Fonseca', 'amanda.fonseca@example.com', '11990000021', '1997-10-09', 'Jundiaí', 'SP', 'Analista de negócios', TRUE),
+('Bernardo Xavier Cunha', 'bernardo.cunha@example.com', '21990000022', '1986-05-13', 'Niterói', 'RJ', 'Consultor de tecnologia', FALSE),
+('Clara Moraes Tavares', 'clara.tavares@example.com', '31990000023', '2001-01-31', 'Contagem', 'MG', 'Estagiária de desenvolvimento', TRUE),
+('Diego Martins Farias', 'diego.farias@example.com', '85990000024', '1993-04-22', 'Fortaleza', 'CE', 'Especialista em segurança', TRUE),
+('Elisa Andrade Rezende', 'elisa.rezende@example.com', '41990000025', '1996-08-15', 'Curitiba', 'PR', 'Analista de marketing', TRUE),
+('Fernando Castro Leal', 'fernando.leal@example.com', '71990000026', '1985-11-10', 'Salvador', 'BA', 'Diretor comercial', TRUE),
+('Giovana Peixoto Moura', 'giovana.moura@example.com', '11990000027', '1998-03-28', 'São Bernardo do Campo', 'SP', 'Designer de produto', TRUE),
+('Hugo Pacheco Neves', 'hugo.neves@example.com', '51990000028', '1990-06-06', 'Caxias do Sul', 'RS', 'DevOps engineer', TRUE),
+('Ingrid Leite Amaral', 'ingrid.amaral@example.com', '81990000029', '1994-09-24', 'Recife', 'PE', 'Analista de recursos humanos', FALSE),
+('José Augusto Vieira', 'jose.vieira@example.com', '61990000030', '1988-02-12', 'Brasília', 'DF', 'Administrador de redes', TRUE),
+
+('Larissa Borges Paiva', 'larissa.paiva@example.com', '11990000031', '1999-12-18', 'Osasco', 'SP', 'Analista de atendimento', TRUE),
+('Marcelo Antunes Prado', 'marcelo.prado@example.com', '34990000032', '1984-07-01', 'Uberaba', 'MG', 'Gerente de operações', TRUE),
+('Natália Queiroz Brito', 'natalia.brito@example.com', '21990000033', '1995-05-20', 'Rio de Janeiro', 'RJ', 'Analista de produto', TRUE),
+('Otávio Maciel Torres', 'otavio.torres@example.com', '11990000034', '1992-10-14', 'Ribeirão Preto', 'SP', 'Desenvolvedor backend', TRUE),
+('Patrícia Azevedo Coelho', 'patricia.coelho@example.com', '41990000035', '1989-03-09', 'Londrina', 'PR', 'Coordenadora financeira', FALSE),
+('Renato Siqueira Lopes', 'renato.lopes@example.com', '51990000036', '1991-08-26', 'Porto Alegre', 'RS', 'Analista de segurança', TRUE),
+('Simone Valente Barros', 'simone.barros@example.com', '71990000037', '1987-01-06', 'Feira de Santana', 'BA', 'Gerente de pessoas', TRUE),
+('Talita Guimarães Vaz', 'talita.vaz@example.com', '11990000038', '1996-04-16', 'Guarulhos', 'SP', 'Desenvolvedora frontend', TRUE),
+('Vinícius Matos Guerra', 'vinicius.guerra@example.com', '31990000039', '1998-07-22', 'Juiz de Fora', 'MG', 'Desenvolvedor full stack', TRUE),
+('Yasmin Cavalcante Luz', 'yasmin.luz@example.com', '85990000040', '2000-09-05', 'Fortaleza', 'CE', 'Assistente administrativa', TRUE),
+
+('Adriana Porto Sales', 'adriana.sales@example.com', '62990000041', '1993-02-19', 'Goiânia', 'GO', 'Analista contábil', TRUE),
+('Caio Vitor Machado', 'caio.machado@example.com', '11990000042', '1997-06-29', 'Campinas', 'SP', 'Analista de testes', TRUE),
+('Débora Nascimento Reis', 'debora.reis@example.com', '91990000043', '1990-11-25', 'Belém', 'PA', 'Coordenadora administrativa', FALSE),
+('Fábio Correia Bastos', 'fabio.bastos@example.com', '81990000044', '1986-03-17', 'Recife', 'PE', 'Engenheiro de software', TRUE),
+('Helena Martins Rosa', 'helena.rosa@example.com', '48990000045', '1999-08-03', 'Florianópolis', 'SC', 'UX researcher', TRUE),
+('Leandro Rezende Maia', 'leandro.maia@example.com', '27990000046', '1992-12-13', 'Vila Velha', 'ES', 'Administrador de sistemas', TRUE),
+('Monique Souza Braga', 'monique.braga@example.com', '21990000047', '1996-05-08', 'Petrópolis', 'RJ', 'Analista de processos', TRUE),
+('Pedro Luiz Santana', 'pedro.santana@example.com', '11990000048', '1994-01-27', 'São José dos Campos', 'SP', 'Tech lead', TRUE),
+('Vitória Almeida Cruz', 'vitoria.cruz@example.com', '84990000049', '2001-10-11', 'Natal', 'RN', 'Estagiária de TI', TRUE),
+('Wesley Ribeiro Dantas', 'wesley.dantas@example.com', '61990000050', '1989-06-23', 'Brasília', 'DF', 'Analista de infraestrutura', FALSE);
+
+-- CONSULTAS PARA VALIDAR OS DADOS
+
+-- Listar todos os usuários
+SELECT *
+FROM usuarios
+ORDER BY id;
+
+-- Consultar usuário pelo ID
+SELECT *
+FROM usuarios
+WHERE id = 1;
+
+-- Buscar usuários que contenham parte do nome
+SELECT *
+FROM usuarios
+WHERE nome LIKE '%Ana%'
+ORDER BY nome;
+
+-- Busca por nome sem diferenciar letras maiúsculas e minúsculas
+SELECT *
+FROM usuarios
+WHERE LOWER(nome) LIKE LOWER('%ana%')
+ORDER BY nome;
+
+-- Listar somente usuários ativos
+SELECT *
+FROM usuarios
+WHERE ativo = TRUE
+ORDER BY nome;
+
+-- Conferir a quantidade de registros
+SELECT COUNT(*) AS total_usuarios
+FROM usuarios;
