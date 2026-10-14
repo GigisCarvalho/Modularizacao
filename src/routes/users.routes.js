@@ -5,7 +5,7 @@ const routes = express.Router(); // Criando um objeto Router do Express para def
 //Definindo as rotas e chamando os controllers responsáveis por cada ação
 routes.post('/', postUser);
 routes.get('/', getUsers);
-routes.get('/is_active/', getUsersByActive);
+routes.get('/is_active/:active', getUsersByActive);
 routes.get('/search/', SearchUsers);
 routes.get('/:id', getUserById);
 routes.put('/:id', putUser);
