@@ -7,7 +7,7 @@ const postUserValidation = [
         .notEmpty()
         .withMessage('O nome é obrigatório.')
         .bail()
-        .isLength({ min:3 })
+        .isLength({ min:3, max: 255 })
         .withMessage('O nome deve possuir ao menos 3 caracteres'),
 
     body('email')
@@ -15,7 +15,7 @@ const postUserValidation = [
         .notEmpty()
         .withMessage('O email é obrigatório.')
         .bail()
-        .isLength({ min:6 })
+        .isLength({ min:6, max: 255 })
         .withMessage('O email deve possuir ao menos 6 caracteres')
         .bail()
         .isEmail()
@@ -65,7 +65,7 @@ const postUserValidation = [
             .notEmpty()
             .withMessage('A cidade é obrigatória')
             .bail()
-            .isLength({min: 5})
+            .isLength({ min: 5, max: 255 })
             .withMessage('A cidade deve possuir ao menos 5 caracteres'),
 
         body('estado')
@@ -81,7 +81,7 @@ const postUserValidation = [
             .notEmpty()
             .withMessage('O cargo é obrigatório')
             .bail()
-            .isLength({min: 5})
+            .isLength({ min: 5, max: 255 })
             .withMessage('O cargo deve possuir ao menos 5 caracteres'),
         
         body('ativo')
@@ -109,7 +109,7 @@ const getUsersValidation = [
 const getUsersByActiveValidation = [
     param('active')
         .trim()
-        .isBoolean()
+        .isInt({ min: 0, max: 1 })
         .withMessage('O ativo deve ser um boleano: 1 ou 0'),
 
     query('page')
@@ -155,13 +155,13 @@ const SearchUsersValidation = [
     body('nome')
         .optional()
         .trim()
-        .isLength({ min:3 })
+        .isLength({ min:3, max: 255 })
         .withMessage('O nome deve possuir ao menos 3 caracteres'),
 
     body('email')
         .optional()
         .trim()
-        .isLength({ min:6 })
+        .isLength({ min:6, max: 255 })
         .withMessage('O email deve possuir ao menos 6 caracteres')
         .bail()
         .isEmail()
@@ -197,7 +197,7 @@ const putUserValidation = [
     body('email')
         .optional()
         .trim()
-        .isLength({ min:6 })
+        .isLength({ min:6, max: 255 })
         .withMessage('O email deve possuir ao menos 6 caracteres')
         .bail()
         .isEmail()
@@ -215,13 +215,13 @@ const putUserValidation = [
     body('cargo')
         .optional()
         .trim()
-        .isLength({min: 5})
+        .isLength({ min: 5, max: 255 })
         .withMessage('O cargo deve possuir ao menos 5 caracteres'),
     
     body('ativo')
         .optional()
         .trim()
-        .isBoolean()
+        .isInt({ min: 0, max: 1 })
         .withMessage('O ativo deve ser um boleano: 1 ou 0')
 
 ]

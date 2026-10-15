@@ -1,13 +1,14 @@
 # Modularização de API de Usuários com Node.js e MySQL
 
-Projeto de estudo desenvolvido para praticar **modularização no Node.js**, separando as responsabilidades da aplicação entre configurações, rotas e controladores.
+Projeto de estudo desenvolvido para praticar a modularização de uma API com Node.js.
 
-A API realiza operações de CRUD em usuários, além de oferecer paginação, busca por nome ou e-mail e filtro por status ativo.
+A aplicação separa as responsabilidades entre configurações, rotas, controladores, validadores e middlewares. A API realiza operações de CRUD em usuários e oferece paginação, pesquisa por nome ou e-mail, filtro por status e validação dos dados recebidos.
 
 ## Tecnologias utilizadas
 
 - Node.js
 - Express
+- Express-validator
 - MySQL
 - mysql2
 - dotenv
@@ -23,7 +24,48 @@ A API realiza operações de CRUD em usuários, além de oferecer paginação, b
 - Filtrar usuários pelo status ativo
 - Atualizar parcialmente os dados de um usuário
 - Excluir usuário
+- Validar body, parâmetros de rota e query parameters
+- Verificar e-mail e telefone duplicados
 - Configurar o banco de dados por variáveis de ambiente
+- Retornar respostas com status HTTP
+
+## Validações
+
+A API utiliza o `express-validator` para validar e sanitizar os dados antes que eles sejam processados pelos controladores.
+
+Entre as validações aplicadas estão:
+
+- Verificação de campos obrigatórios
+- Remoção de espaços no início e no final dos textos
+- Validação do formato de e-mail
+- Verificação de e-mail já cadastrado
+- Validação de telefone com exatamente 11 dígitos
+- Verificação de telefone já cadastrado
+- Validação da data de nascimento
+- Validação do tamanho mínimo e máximo dos campos
+- Validação do estado com exatamente dois caracteres
+- Validação do status ativo, aceitando apenas `0` ou `1`
+- Validação de IDs inteiros maiores que zero
+- Validação dos parâmetros de paginação
+- Validação dos campos permitidos na atualização parcial
+
+Quando uma validação falha, a requisição não chega ao controller. O middleware retorna os erros encontrados com o status `400 Bad Request`.
+
+Exemplo de resposta de validação:
+
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "value": "email-invalido",
+      "msg": "Email inválido",
+      "path": "email",
+      "location": "body"
+    }
+  ]
+}
+```
 
 ## Estrutura do projeto
 
@@ -34,15 +76,49 @@ Modularizacao/
 │   │   └── db.config.js
 │   ├── controllers/
 │   │   └── users.controllers.js
+│   ├── middlewares/
+│   │   └── validate.middlewares.js
 │   ├── routes/
 │   │   └── users.routes.js
+│   ├── validators/
+│   │   └── user.validators.js
 │   └── index.js
 ├── .env.example
 ├── .gitignore
 ├── dev_db.txt
+├── package-lock.json
 ├── package.json
 └── README.md
 ```
+
+### Responsabilidade dos diretórios
+
+- config: configuração da conexão com o banco de dados.
+- controllers: regras de execução dos endpoints e consultas ao banco.
+- middlewares: processamento intermediário das requisições.
+- routes: definição dos endpoints e ligação entre validadores e controllers.
+- validators: regras de validação e sanitização dos dados.
+- index.js: configuração e inicialização do servidor Express.
+
+## Fluxo da requisição
+
+```text
+Requisição
+    ↓
+Rota
+    ↓
+Regras do express-validator
+    ↓
+Middleware de validação
+    ↓
+Controller
+    ↓
+Banco de dados
+    ↓
+Resposta
+```
+
+Se uma validação falhar, o middleware retorna a resposta de erro e interrompe o fluxo antes que o controller seja executado.
 
 ## Pré-requisitos
 
@@ -51,6 +127,8 @@ Antes de executar o projeto, tenha instalado:
 - Node.js 18 ou superior
 - MySQL
 - npm
+- express
+- express-validator
 - dotenv
 - mysql2
 - cors
@@ -69,11 +147,7 @@ Acesse a pasta do projeto:
 cd Modularizacao
 ```
 
-Instale as dependências:
-
-```bash
-npm install
-```
+Instale as dependências
 
 ## Variáveis de ambiente
 
@@ -138,8 +212,18 @@ Parâmetros opcionais:
 ```text
 ?page=1&limit=10
 ```
-
 Use `1` para usuários ativos e `0` para usuários inativos.
+
+Exemplos:
+
+```text
+GET /is_active/1
+```
+
+```text
+GET /is_active/0?page=1&limit=10
+
+```
 
 ### Pesquisar usuários
 
@@ -150,6 +234,16 @@ GET /search/
 Parâmetros:
 
 ```text
+?nome=Ana
+```
+
+```text
+?email=@gmail.com
+```
+
+Também é possível pesquisar utilizando os dois filtros:
+
+```text
 ?nome=Ana&email=@gmail
 ```
 
@@ -157,6 +251,12 @@ Parâmetros opcionais:
 
 ```text
 ?page=1&limit=10
+```
+
+Exemplo completo:
+
+```text
+GET /search?nome=Ana&page=1&limit=10
 ```
 
 A pesquisa utiliza correspondência parcial nos campos `nome` e `email`.
@@ -172,6 +272,8 @@ Exemplo:
 ```http
 GET /1
 ```
+
+O ID deve ser um número inteiro maior que zero.
 
 ### Cadastrar usuário
 
@@ -194,6 +296,22 @@ Exemplo de corpo da requisição:
 }
 ```
 
+Resposta de sucesso:
+
+```JSON
+{
+  "id": 1,
+  "nome": "Ana Souza",
+  "email": "ana@email.com"
+}
+```
+
+Status retornado:
+
+```text
+201 Created
+```
+
 ### Atualizar usuário
 
 ```http
@@ -201,6 +319,7 @@ PUT /:id
 ```
 
 A atualização aceita os campos `email`, `telefone`, `cargo` e `ativo`. Os campos não enviados permanecem com os valores atuais.
+É necessário enviar pelo menos um campo permitido.
 
 Exemplo:
 
@@ -223,17 +342,41 @@ Exemplo:
 DELETE /1
 ```
 
+Resposta de sucesso:
+
+```JSON
+{
+  "mensagem": "Removido com sucesso"
+}
+```
+
+## Status HTTP utilizados
+- 200 OK: consulta, atualização ou exclusão realizada com sucesso.
+- 201 Created: usuário criado com sucesso.
+- 400 Bad Request: dados ou parâmetros inválidos.
+- 404 Not Found: usuário, registro ou página não encontrada.
+- 409 Conflict: e-mail ou telefone já utilizado.
+- 500 Internal Server Error: erro inesperado durante o processamento.
+
 ## Conceitos praticados
 
-- Modularização de um projeto Node.js
-- Separação entre rotas, controladores e configurações
+- Modularização de projetos Node.js
+- Separação de responsabilidades
 - Criação de API REST com Express
-- Conexão com MySQL usando pool de conexões
+- Configuração de rotas
+- Criação de controllers
+- Criação de middlewares
+- Validação e sanitização com Express Validator
+- Validação de body, params e query
+- Conexão com MySQL por pool de conexões
 - Consultas SQL parametrizadas
-- Paginação com `LIMIT` e `OFFSET`
-- Atualização parcial com `COALESCE`
+- Prevenção básica de SQL Injection
+- Paginação com LIMIT e OFFSET
+- Atualização parcial com COALESCE
 - Uso de variáveis de ambiente
-- Tratamento de erros com `try/catch`
+- Tratamento de erros com try/catch
+- Uso de status HTTP em APIs REST
+- Exportação e importação de módulos com CommonJS
 
 ## Autora
 
