@@ -12,8 +12,11 @@ const postUserValidation = [
         .withMessage('O nome é obrigatório.')
         .bail()
         .isLength({ min:3, max: 255 })
-        .withMessage('O nome deve possuir ao menos 3 caracteres.'),
-
+        .withMessage('O nome deve possuir ao menos 3 caracteres.')
+        .bail()
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('O nome deve possuir apenas letras.'),
+        
     // Valida o formato e a disponibilidade do e-mail.
     body('email')
         .trim()
@@ -45,7 +48,7 @@ const postUserValidation = [
         .notEmpty()
         .withMessage('O telefone é obrigatório.')
         .bail()
-        .isNumeric()
+        .isInt({min: 1})
         .withMessage('O telefone deve ser formado apenas por números.')
         .bail()
         .isLength({ min:11, max:11})
@@ -78,6 +81,9 @@ const postUserValidation = [
         .notEmpty()
         .withMessage('A cidade é obrigatória.')
         .bail()
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('A cidade deve possuir apenas letras.')
+        .bail()
         .isLength({ min: 5, max: 255 })
         .withMessage('A cidade deve possuir ao menos 5 caracteres.'),
 
@@ -87,6 +93,9 @@ const postUserValidation = [
         .notEmpty()
         .withMessage('O estado é obrigatório.')
         .bail()
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('O estado deve possuir apenas letras.')
+        .bail()
         .isLength({min: 2, max:2})
         .withMessage('O estado deve possuir 2 caracteres.'),
 
@@ -95,6 +104,9 @@ const postUserValidation = [
         .trim()
         .notEmpty()
         .withMessage('O cargo é obrigatório.')
+        .bail()
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('O cargo deve possuir apenas letras.')
         .bail()
         .isLength({ min: 5, max: 255 })
         .withMessage('O cargo deve possuir ao menos 5 caracteres.'),
@@ -181,18 +193,13 @@ const SearchUsersValidation = [
     body('nome')
         .optional()
         .trim()
-        .isLength({ min:3, max: 255 })
-        .withMessage('O nome deve possuir ao menos 3 caracteres.'),
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('O nome deve possuir apenas letras.'),
 
     // Valida o e-mail somente quando ele for enviado.
     body('email')
         .optional()
         .trim()
-        .isLength({ min:6, max: 255 })
-        .withMessage('O email deve possuir ao menos 6 caracteres.')
-        .bail()
-        .isEmail()
-        .withMessage('Email inválido.'),
 ]
 
 const putUserValidation = [
@@ -250,7 +257,10 @@ const putUserValidation = [
         .optional()
         .trim()
         .isLength({ min: 5, max: 255 })
-        .withMessage('O cargo deve possuir ao menos 5 caracteres.'),
+        .withMessage('O cargo deve possuir ao menos 5 caracteres.')
+        .bail()
+        .isAlpha('pt-BR', { ignore: ' ' })
+        .withMessage('O cargo deve possuir apenas letras.'),
 
     // Valida o novo ativo quando ele for enviado.
     body('ativo')

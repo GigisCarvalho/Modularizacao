@@ -113,11 +113,11 @@ async function searchUsers(req, res) {
         else {
 
             // Define filtros vazios caso os campos não tenham sido enviados.
-            const nomeFiltro = nome ?? '';
-            const emailFiltro = email ?? '';
+            const nomeFiltro = nome ? `%${nome}%` : null;
+            const emailFiltro = email ? `%${email}%` : null;
 
             // Conta quantos usuários correspondem aos filtros informados.
-            const [rowsCount] = await pool.query('SELECT COUNT(*) AS count FROM usuarios WHERE nome LIKE ? OR email LIKE ?', [`%${nomeFiltro}%`, `%${emailFiltro}%`])
+            const [rowsCount] = await pool.query('SELECT COUNT(*) AS count FROM usuarios WHERE (? IS NOT NULL AND nome LIKE ?) OR (? IS NOT NULL AND email LIKE ?)', [nomeFiltro, nomeFiltro, emailFiltro, emailFiltro]);
 
             if (rowsCount[0].count !== 0){
                 // Calcula a última página disponível com base na quantidade total de registros.
@@ -141,7 +141,7 @@ async function searchUsers(req, res) {
             };
 
             // Busca apenas os registros da página solicitada.
-            const [rows] = await pool.query('SELECT * FROM usuarios WHERE nome LIKE ? OR email LIKE ? LIMIT ? OFFSET ?', [`%${nomeFiltro}%`, `%${emailFiltro}%`, limit, (page * limit) - limit]);
+            const [rows] = await pool.query('SELECT * FROM usuarios WHERE (? IS NOT NULL AND nome LIKE ?) OR (? IS NOT NULL AND email LIKE ?) ORDER BY id LIMIT ? OFFSET ?', [  nomeFiltro, nomeFiltro, emailFiltro, emailFiltro, limit, (page - 1) * limit]);
             return res.status(200).json({users:rows, paginationConfig: pagination})
         }
     } catch(error){
@@ -195,7 +195,7 @@ async function putUser(req, res) {
         }
 
         // Atualiza somente os campos informados utilizando COALESCE.
-        const [result] = await pool.query('UPDATE usuarios SET email = COALESCE(?, email), telefone = COALESCE(?, telefone), cargo = COALESCE(?, cargo), ativo = COALESCE(?, ativo) WHERE id = ?', [email ?? null, telefone ?? null, cargo ?? null, ativo ?? null, id])
+        const [result] = await pool.query('UPDATE usuarios SET email = COALESCE(?, email), telefone = COALESCE(?, telefone), cargo = COALESCE(?, cargo), ativo = COALESCE(?, ativo), atualizado_em = now() WHERE id = ?', [email ?? null, telefone ?? null, cargo ?? null, ativo ?? null, id])
 
         //confere se algum usuário foi atualizado
         if (result.affectedRows === 0) {
